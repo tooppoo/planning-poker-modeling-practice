@@ -1,0 +1,62 @@
+@startuml プランニングポーカー
+left to right direction
+
+:ファシリテーター: as facilitator << role >>
+:プレイヤー: as player << role >>
+:参加者: as member 
+
+
+entity "テーブル" as table
+entity "カード" as card
+table o-- "n" card
+
+package ポーカーをプレイ {
+    (カードをテーブルに伏せる)
+    (伏せたカードを交換する)
+    (テーブル上のカードを開示する)
+
+    member -- (テーブルを閲覧する)
+
+    player --- (カードをテーブルに伏せる)
+    player -- (伏せたカードを交換する)
+    (伏せたカードを交換する) .u.> (カードをテーブルに伏せる) : <<include>>
+}
+package 参加 {
+    (テーブルに招待する) -u- member
+    member -- (テーブルに参加する)
+
+    (プレイヤーとして参加) -u-|> (テーブルに参加する) : add role
+    (ファシリテーターとして参加) -u-|> (テーブルに参加する) : add role
+    (観客として参加) -u-|> (テーブルに参加する) : remove role
+    (プレイヤーとして参加) --> player
+    (ファシリテーターとして参加) --> facilitator
+
+    member -- (テーブルを抜ける)
+
+    facilitator -- (テーブル上のカードを開示する)
+
+    note top of (ファシリテーターとして参加)
+      すでにファシリテーターが存在する場合、ファシリテーターロールの委譲を現ファシリテーターに依頼する
+      現ファシリテーターが承諾したとき、ファシリテーターロールが移動する
+    end note
+    note top of (観客として参加)
+      ファシリテーターは参加不可
+    end note
+}
+package テーブル準備 {
+    facilitator -u-> (テーブルを用意する)
+    facilitator -u-> (テーブルに招待する)
+    facilitator -- (テーブルを空にする)
+}
+package 解散 {
+    facilitator --> (テーブルを片付ける)
+    (テーブルを片付ける) -- table
+}
+
+ポーカーをプレイ -- table
+ポーカーをプレイ -- card
+
+テーブル準備 -- table
+
+参加 -- table
+@enduml

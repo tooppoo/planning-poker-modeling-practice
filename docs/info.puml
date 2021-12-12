@@ -1,0 +1,80 @@
+@startuml 情報モデル
+
+package プランニングポーカー {
+  class "カード" as card
+
+  package "テーブル" as tablePkg {
+    class "テーブル" as table
+    note top of table
+      テーブルには、1プレイヤーにつき1枚しかカードはふせられない
+    end note
+  }
+
+  package 参加者 {
+    class "参加者" as member
+    class "参加者ID" as memberId
+
+    member *--> "1" memberId
+    package "ロール" as rolePkg {
+      interface "参加者ロール" as memberRole
+      member o--> "1..3" memberRole
+
+      note top of memberRole
+        重複しての保持は禁止
+      end note
+
+      interface "アクション" as action
+      action .u.> member : 実行する人
+      action .u.> table : 実行するテーブル
+
+      memberRole .u.> "n" action : 実行可能なアクションを提示
+
+      package "ファシリテーター" as facilitatorPkg {
+        class "ファシリテーター" as facilitator
+        facilitator .u.|> memberRole
+
+        package "アクション" as facilitatorAction {
+          facilitator --> テーブルを作成する
+          facilitator --> テーブルに招待する
+          facilitator --> テーブルのカードを開示する
+          facilitator --> テーブルを空にする
+          facilitator --> テーブルを解散する
+        }
+      }
+      package "プレイヤー" as playerPkg {
+        class "プレイヤー" as player
+        player .u.|> memberRole
+
+        package "アクション" as playerAction {
+          player --> カードをテーブルに伏せる
+          カードをテーブルに伏せる o--> "1" card
+
+          player --> テーブルに伏せたカードを交換する
+          テーブルに伏せたカードを交換する o-u-> "1" memberId
+          テーブルに伏せたカードを交換する o--> "1" card
+        }
+      }
+    }
+  }
+
+  package "テーブル" as tablePkg {
+    package "カード" as cardOnTablePkg {
+      class "テーブル上カード" as cardOnTable
+
+      interface "カード状態" as cardState
+      cardState <|.. 非公開
+      cardState <|.. 公開
+
+      cardOnTable o--> "1" cardState
+      cardOnTable o--> "1" card
+      cardOnTable o--> "1" memberId : このカードを伏せた参加者のID
+    }
+
+    table o--> "n" member
+    table o--> "n" cardOnTable
+  }
+
+
+
+}
+@enduml

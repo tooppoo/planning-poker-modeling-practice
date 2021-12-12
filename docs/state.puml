@@ -1,0 +1,36 @@
+@startuml 状態遷移
+
+state "参加者ロール" as state1 {
+  state "観客" as m1
+}
+state "参加者ロール" as state2 {
+  state "観客" as m2
+  state "プレイヤー" as p2
+}
+state "参加者ロール" as state3 {
+  state "観客" as m3
+  state "ファシリテーター" as f3
+}
+state "参加者ロール" as state4 {
+  state "観客" as m4
+  state "プレイヤー" as p4
+  state "ファシリテーター" as f4
+}
+
+[*] --> state1 : テーブル参加
+state1 --> state2 : プレイヤーとして参加
+state1 --> state3 : ファシリテーターとして参加
+
+state2 --> state4 : ファシリテーターとして参加
+state3 --> state4 : プレイヤーとして参加
+
+state2 -u-> state1 : 観客として参加
+state3 -u-> state1 : 観客として参加
+state4 -u-> state1 : 観客として参加
+
+state1 --> [*] : テーブルを抜ける
+state2 --> [*] : テーブルを抜ける
+state3 --> [*] : テーブルを抜ける
+state4 --> [*] : テーブルを抜ける
+
+@enduml
