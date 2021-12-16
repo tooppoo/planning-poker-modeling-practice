@@ -24,7 +24,6 @@ package プランニングポーカー {
       end note
 
       interface "アクション" as action
-      action .u.> member : 実行する人
       action .u.> table : 実行するテーブル
 
       memberRole .u.> "n" action : 実行可能なアクションを提示
