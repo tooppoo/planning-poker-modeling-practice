@@ -9,17 +9,15 @@ import table.Table
 import org.scalatest.funspec.AnyFunSpec
 
 class ScenarioTest extends AnyFunSpec {
+
   describe("プランニングポーカー実施") {
+    val dispatcher = Command.Dispatcher.NoPersistenceDispatcher
+
     it("テーブル準備 ~ メンバー招待 ~ ポーカープレイ ~ 解散") {
       val facilitator = Member(
         Member.Id("1"),
         Member.Name("John Doe"),
         List(Member.Role.Facilitator, Member.Role.Player)
-      )
-
-      var table = Command.dispatch(
-        Member.Role.Facilitator.Commands.SetUpNewTable,
-        Table(Table.Id("table"), facilitator)
       )
 
       val player2 = Member(
@@ -38,52 +36,68 @@ class ScenarioTest extends AnyFunSpec {
         List(Member.Role.Audience, Member.Role.Player)
       )
 
-      // プレイヤー参加
-      table = Command.dispatch(
-        Member.Role.NewComer.Commands.Join(player2),
-        table
-      )
-      table = Command.dispatch(
-        Member.Role.NewComer.Commands.Join(player3),
-        table
-      )
-      table = Command.dispatch(
-        Member.Role.NewComer.Commands.Join(player4),
-        table
-      )
+      val tableAfterPlayed = for {
+        table <- dispatcher.dispatch(
+          Member.Role.Facilitator.Commands.SetUpNewTable(facilitator),
+          Table(Table.Id("table"), facilitator)
+        )
+        // プレイヤー参加
+        table <- dispatcher.dispatch(
+          Member.Role.NewComer.Commands.Join(player2),
+          table
+        )
+        table <- dispatcher.dispatch(
+          Member.Role.NewComer.Commands.Join(player3),
+          table
+        )
+        table <- dispatcher.dispatch(
+          Member.Role.NewComer.Commands.Join(player4),
+          table
+        )
+        // ポーカープレイ
+        table <- dispatcher.dispatch(
+          Member.Role.Player.Commands.PutDownCard(facilitator, Card("1")),
+          table
+        )
+        table <- dispatcher.dispatch(
+          Member.Role.Player.Commands.PutDownCard(player3, Card("2")),
+          table
+        )
+        table <- dispatcher.dispatch(
+          Member.Role.Player.Commands.PutDownCard(player4, Card("1")),
+          table
+        )
+        table <- dispatcher.dispatch(
+          Member.Role.Player.Commands.ChangeCardOnTable(player4, Card("3")),
+          table
+        )
+      } yield {
+        assert(table.cards.map(c => c.suite).mkString(" ") == "* * *")
 
-      table = Command.dispatch(
-        Member.Role.Player.Commands.PutDownCard(facilitator, Card("1")),
         table
-      )
-      table = Command.dispatch(
-        Member.Role.Player.Commands.PutDownCard(player3, Card("2")),
-        table
-      )
-      table = Command.dispatch(
-        Member.Role.Player.Commands.PutDownCard(player4, Card("1")),
-        table
-      )
-      table = Command.dispatch(
-        Member.Role.Player.Commands.ChangeCardOnTable(player4, Card("3")),
-        table
-      )
+      }
 
-      assert(table.cards.map(c => c.suite).mkString(" ") == "* * *")
+      val tableAfterShowDown = for {
+        table <- tableAfterPlayed
+        table <- dispatcher.dispatch(
+          Member.Role.Facilitator.Commands.ShowDown(facilitator),
+          table
+        )
+      } yield {
+        assert(table.cards.map(c => c.suite).mkString(" ") == "1 2 3")
 
-      table = Command.dispatch(
-        Member.Role.Facilitator.Commands.ShowDown,
         table
-      )
+      }
 
-      assert(table.cards.map(c => c.suite).mkString(" ") == "1 2 3")
-
-      table = Command.dispatch(
-        Member.Role.Facilitator.Commands.CloseTable,
-        table
-      )
-
-      assert(table.cards.isEmpty)
+      for {
+        table <- tableAfterShowDown
+        table <- dispatcher.dispatch(
+          Member.Role.Facilitator.Commands.CloseTable(facilitator),
+          table
+        )
+      } {
+        assert(table.cards.isEmpty)
+      }
     }
   }
 }

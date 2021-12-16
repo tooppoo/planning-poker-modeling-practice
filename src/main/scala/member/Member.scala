@@ -3,12 +3,15 @@ package member
 
 import card.Card
 import command.Command
+import table.Table
+import table.Table.CardOnTable
 
 case class Member(
-                   private val id: Member.Id,
+                   id: Member.Id,
                    private val name: Member.Name,
                    private val roles: List[Member.Role]
                  ) {
+  def has(role: Member.Role): Boolean = roles.contains(role)
 }
 object Member {
   case class Id(value: String) {
@@ -21,27 +24,52 @@ object Member {
   sealed trait Role
   object Role {
     case object Facilitator extends Role {
+
+      trait FacilitatorCommand extends Command {
+        override val requiredRole: Some[Facilitator.type] = Some(Facilitator)
+      }
+
       object Commands {
-        case object SetUpNewTable extends Command
+        case class SetUpNewTable(actor: Member) extends FacilitatorCommand {
+          override protected def runImpl(at: Table): Either[Exception, Table] = Right(at)
+        }
 
-        case object ShowDown extends Command
+        case class ShowDown(actor: Member) extends FacilitatorCommand {
+          override protected def runImpl(at: Table): Either[Exception, Table] =
+            Right(at.withCards(at.cards.map(c => c.open)))
+        }
 
-        case object CloseTable extends Command
+        case class CloseTable(actor: Member) extends FacilitatorCommand {
+          override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.toEmpty)
+        }
       }
     }
 
     case object Player extends Role {
+      trait PlayerCommand extends Command {
+        val requiredRole: Some[Role] = Some(Player)
+      }
       object Commands {
-        case class PutDownCard(player: Member, card: Card) extends Command
+        case class PutDownCard(actor: Member, card: Card) extends PlayerCommand {
+          override protected def runImpl(at: Table): Either[Exception, Table] = at.put(CardOnTable(actor, card))
+        }
 
-        case class ChangeCardOnTable(player: Member, card: Card) extends Command
+        case class ChangeCardOnTable(actor: Member, card: Card) extends PlayerCommand {
+          override protected def runImpl(at: Table): Either[Exception, Table] = Right(
+            at.replace(CardOnTable(actor, card))
+          )
+        }
       }
     }
 
     case object Audience extends Role
     case object NewComer extends Role {
       object Commands {
-        case class Join(member: Member) extends Command
+        case class Join(actor: Member) extends Command {
+          val requiredRole: Option[Role] = None
+
+          override protected def runImpl(at: Table): Either[Exception, Table] = at.accept(actor)
+        }
       }
     }
   }
