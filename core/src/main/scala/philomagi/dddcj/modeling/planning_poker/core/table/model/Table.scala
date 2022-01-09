@@ -1,9 +1,9 @@
-package philomagi.dddcj.modeling.planning_poker
-package domain.model.table
+package philomagi.dddcj.modeling.planning_poker.core
+package table.model
 
-import domain.model.card.Card
-import domain.model.member.Member
-import domain.model.table.Table.CardOnTable
+import attendance.model.Member
+import card.model.Card
+import table.model.Table.CardOnTable
 
 class Table private (
                       val id: Table.Id,
@@ -57,10 +57,10 @@ object Table {
   case class Id(private val value: String)
 
   case class CardOnTable private (
-                          owner: Member,
-                          private val card: Card,
-                          private val state: CardOnTable.State
-                        ) {
+                                   owner: Member,
+                                   private val card: Card,
+                                   private val state: CardOnTable.State
+                                 ) {
     def suite: String = state match {
       case CardOnTable.State.Open => card.suite.label
       case CardOnTable.State.Close => "*"

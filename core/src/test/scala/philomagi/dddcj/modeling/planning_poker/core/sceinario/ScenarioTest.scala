@@ -1,17 +1,15 @@
-package philomagi.dddcj.modeling.planning_poker
-package scenario
+package philomagi.dddcj.modeling.planning_poker.core
+package sceinario
 
-import domain.model.card.Card
-import domain.model.command.Command
-import domain.model.command.Command.Commands
-import domain.model.member.Member
-import domain.model.role.Role
-import domain.model.table.Table
-
+import attendance.model.Member
+import card.model.Card
+import command.model.Command
+import command.model.Command.Commands
 import org.scalatest.funspec.AnyFunSpec
+import role.model.Role
+import table.model.Table
 
 class ScenarioTest extends AnyFunSpec {
-
   describe("プランニングポーカー実施") {
     val dispatcher = Command.Dispatcher.NoPersistenceDispatcher
 

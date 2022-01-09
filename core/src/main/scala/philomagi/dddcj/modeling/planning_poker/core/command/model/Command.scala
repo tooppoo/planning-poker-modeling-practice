@@ -1,11 +1,11 @@
-package philomagi.dddcj.modeling.planning_poker
-package domain.model.command
+package philomagi.dddcj.modeling.planning_poker.core
+package command.model
 
-import domain.model.card.Card
-import domain.model.member.Member
-import domain.model.role.Role
-import domain.model.role.Role.{Facilitator, Player}
-import domain.model.table.Table
+import attendance.model.Member
+import card.model.Card
+import role.model.Role
+import role.model.Role.{Facilitator, Player}
+import table.model.Table
 
 trait Command {
   val actor: Member

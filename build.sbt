@@ -1,12 +1,25 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
 
+ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "2.13.7"
+
+ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
+ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest-funspec" % "3.2.10" % Test
 
 lazy val root = (project in file("."))
   .settings(
-    name := "planning-poker",
-    idePackagePrefix := Some("philomagi.dddcj.modeling.planning_poker")
+    name := "planning-poker"
   )
+  .aggregate(core)
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
-libraryDependencies += "org.scalatest" %% "scalatest-funspec" % "3.2.10" % Test
+lazy val core = (project in file("core"))
+  .configure(prj => {
+    val path = prj.base.getAbsolutePath
+
+    prj.settings(
+      jig / jigProjectPath := path,
+      jig / jigOutputDirectoryText := s"$path/target/jig",
+      jig / jigDirectoryClasses := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
+      jig / jigDirectoryResources := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
+      jig / jigPatternDomain := s".+\\.model\\..+"
+    )
+  })

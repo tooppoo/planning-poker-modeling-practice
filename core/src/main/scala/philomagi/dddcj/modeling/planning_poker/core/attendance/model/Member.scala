@@ -1,7 +1,7 @@
-package philomagi.dddcj.modeling.planning_poker
-package domain.model.member
+package philomagi.dddcj.modeling.planning_poker.core
+package attendance.model
 
-import domain.model.role.Role
+import role.model.Role
 
 case class Member(
                    id: Member.Id,
