@@ -45,6 +45,9 @@ object Command {
     trait PlayerCommand extends Command {
       val requiredRole: Some[Role] = Some(Player)
     }
+    trait FreeCommand extends Command {
+      override val requiredRole: Option[Role] = None
+    }
 
     case class SetUpNewTable(actor: Member) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at)
@@ -64,9 +67,8 @@ object Command {
     case class ChangeCardOnTable(actor: Member, card: Card) extends PlayerCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.replace(card, by = actor)
     }
-    case class Join(actor: Member) extends Command {
-      val requiredRole: Option[Role] = None
 
+    case class Join(actor: Member) extends FreeCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.accept(actor)
     }
   }
