@@ -49,7 +49,7 @@ object Table {
                           private val state: CardOnTable.State
                         ) {
     def suite: String = state match {
-      case CardOnTable.State.Open => card.suite
+      case CardOnTable.State.Open => card.suite.label
       case CardOnTable.State.Close => "*"
     }
 
