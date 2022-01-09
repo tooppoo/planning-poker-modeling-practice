@@ -16,27 +16,35 @@ class Table private (
     Left(new Exception(s"${newMember.id} already joined to table $id"))
   }
 
-  def put(newCard: CardOnTable): Either[Exception, Table] = if (members.contains(newCard.owner)) {
+  def put(newCard: Card, by: Member): Either[Exception, Table] = if (members.contains(by)) {
     if (cards.contains(newCard)) {
-      Right(replace(newCard))
+      Right(replace(newCard, by = by))
     } else {
-      Right(new Table(id, members, cards.appended(newCard)))
+      Right(
+        new Table(
+          id,
+          members,
+          cards.appended(CardOnTable(by, newCard))
+        )
+      )
     }
   } else {
-    Left(new Exception(s"${newCard.owner} not joined to table $id yet"))
+    Left(new Exception(s"$by not joined to table $id yet"))
   }
 
-  def replace(newCard: CardOnTable): Table = withCards(
-    cards.map(c => if (c.owner == newCard.owner) {
-      newCard
+  def replace(newCard: Card, by: Member): Table = withCards(
+    cards.map(c => if (c.owner == by) {
+      CardOnTable(by, newCard)
     } else {
       c
     })
   )
 
-  def withCards(cards: List[CardOnTable]) = new Table(id, members, cards)
+  def openCards: Table = withCards(cards.map(c => c.open))
 
-  def toEmpty = new Table(id, List.empty, List.empty)
+  def toEmpty: Table = new Table(id, List.empty, List.empty)
+
+  private def withCards(cards: List[CardOnTable]) = new Table(id, members, cards)
 }
 object Table {
   def apply(id: Table.Id, opener: Member) = new Table(id, List(opener), List.empty)
@@ -58,7 +66,7 @@ object Table {
 
   object CardOnTable {
     def apply(owner: Member, card: Card): CardOnTable = apply(owner, card, CardOnTable.State.Close)
-    private[Table] def apply(owner: Member, card: Card, state: CardOnTable.State) =
+    private[CardOnTable] def apply(owner: Member, card: Card, state: CardOnTable.State) =
       new CardOnTable(owner, card, state)
 
     sealed trait State

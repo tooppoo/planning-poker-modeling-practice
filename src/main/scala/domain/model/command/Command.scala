@@ -6,7 +6,6 @@ import domain.model.member.Member
 import domain.model.role.Role
 import domain.model.role.Role.{Facilitator, Player}
 import domain.model.table.Table
-import domain.model.table.Table.CardOnTable
 
 trait Command {
   val actor: Member
@@ -53,20 +52,20 @@ object Command {
     }
 
     case class ShowDown(actor: Member) extends FacilitatorCommand {
-      override protected def runImpl(at: Table): Either[Exception, Table] =
-        Right(at.withCards(at.cards.map(c => c.open)))
+      override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.openCards)
     }
 
     case class CloseTable(actor: Member) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.toEmpty)
     }
     case class PutDownCard(actor: Member, card: Card) extends PlayerCommand {
-      override protected def runImpl(at: Table): Either[Exception, Table] = at.put(CardOnTable(actor, card))
+      override protected def runImpl(at: Table): Either[Exception, Table] =
+        at.put(card, by = actor)
     }
 
     case class ChangeCardOnTable(actor: Member, card: Card) extends PlayerCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(
-        at.replace(CardOnTable(actor, card))
+        at.replace(card, by = actor)
       )
     }
     case class Join(actor: Member) extends Command {
