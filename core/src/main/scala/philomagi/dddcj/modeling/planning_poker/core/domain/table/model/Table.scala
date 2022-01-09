@@ -6,28 +6,31 @@ import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table.Car
 
 class Table private (
                       val id: Table.Id,
-                      val members: List[Attendance],
-                      val cards: List[CardOnTable]
+                      val attendances: Seq[Attendance],
+                      val cards: Seq[CardOnTable]
                     ) {
-  def accept(newMember: Attendance): Either[Exception, Table] = if (!members.contains(newMember)) {
-    Right(new Table(id, members.appended(newMember), cards))
-  } else {
-    Left(new Exception(s"${newMember.id} already joined to table $id"))
-  }
+  protected[core] def accept(newMember: Attendance): Either[Exception, Table] =
+    if (!attendances.contains(newMember)) {
+      Right(new Table(id, attendances ++ Seq(newMember), cards))
+    } else {
+      Left(new Exception(s"${newMember.id} already joined to table $id"))
+    }
 
-  def put(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
-    if (cards.contains(newCard)) {
+  protected[core] def put(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
+    val alreadyExistOnTable = cards.exists(c => (c is newCard) && (c putBy by))
+
+    if (alreadyExistOnTable) {
       replace(newCard, by = by)
     } else {
       Right(new Table(
         id,
-        members,
-        cards.appended(CardOnTable(by, newCard))
+        attendances,
+        cards ++ Seq(CardOnTable(by, newCard))
       ))
     }
   }
 
-  def replace(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
+  protected[core] def replace(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
     Right(withCards(
       cards.map(c => if (c.owner == by) {
         CardOnTable(by, newCard)
@@ -37,25 +40,25 @@ class Table private (
     ))
   }
 
-  def openCards: Table = withCards(cards.map(c => c.open))
+  protected[core] def openCards: Table = withCards(cards.map(c => c.open))
 
-  def toEmpty: Table = new Table(id, List.empty, List.empty)
+  protected[core] def toEmpty: Table = new Table(id, Seq.empty, Seq.empty)
 
-  private def withCards(cards: List[CardOnTable]) = new Table(id, members, cards)
+  private def withCards(cards: Seq[CardOnTable]) = new Table(id, attendances, cards)
 
   private def requireAlreadyJoin(m: Attendance)(r: Either[Exception, Table]): Either[Exception, Table] =
-    if (members.contains(m)) {
+    if (attendances.contains(m)) {
       r
     } else {
       Left(new Exception(s"$m not joined to table $id yet"))
     }
 }
 object Table {
-  def apply(id: Table.Id, opener: Attendance) = new Table(id, List(opener), List.empty)
+  def apply(id: Table.Id, opener: Attendance) = new Table(id, Seq(opener), Seq.empty)
 
   case class Id(private val value: String)
 
-  case class CardOnTable private (
+  protected[table] case class CardOnTable private (
                                    owner: Attendance,
                                    private val card: Card,
                                    private val state: CardOnTable.State
@@ -66,15 +69,20 @@ object Table {
     }
 
     def open: CardOnTable = CardOnTable(owner, card, CardOnTable.State.Open)
+
+    def is(other: Card): Boolean = card == other
+
+    def putBy(who: Attendance): Boolean = owner == who
   }
 
   object CardOnTable {
-    def apply(owner: Attendance, card: Card): CardOnTable = apply(owner, card, CardOnTable.State.Close)
+    protected[table] def apply(owner: Attendance, card: Card): CardOnTable = apply(owner, card, CardOnTable.State.Close)
+
     private[CardOnTable] def apply(owner: Attendance, card: Card, state: CardOnTable.State) =
       new CardOnTable(owner, card, state)
 
-    sealed trait State
-    object State {
+    private[CardOnTable] sealed trait State
+    private[CardOnTable] object State {
       case object Open extends State
       case object Close extends State
     }

@@ -5,9 +5,11 @@ import philomagi.dddcj.modeling.planning_poker.core.domain.role.model.Role
 case class Attendance(
                        id: Attendance.Id,
                        private val name: Attendance.Name,
-                       private val roles: List[Role]
+                       private val roles: Seq[Role]
                  ) {
   def has(role: Role): Boolean = roles.contains(role)
+
+  def ==(other: Attendance): Boolean = id == other.id
 }
 object Attendance {
   case class Id(value: String) {

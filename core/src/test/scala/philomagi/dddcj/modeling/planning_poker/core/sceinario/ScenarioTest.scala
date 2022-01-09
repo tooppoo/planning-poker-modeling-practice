@@ -97,7 +97,7 @@ class ScenarioTest extends AnyFunSpec {
         )
       } {
         assert(table.cards.isEmpty)
-        assert(table.members.isEmpty)
+        assert(table.attendances.isEmpty)
       }
     }
   }
