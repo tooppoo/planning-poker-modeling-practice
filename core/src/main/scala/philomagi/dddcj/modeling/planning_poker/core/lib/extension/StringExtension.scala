@@ -1,6 +1,6 @@
 package philomagi.dddcj.modeling.planning_poker.core.lib.extension
 
-protected[attendance] object StringExtension {
+protected[core] object StringExtension {
   implicit class StringMaybeBlank(str: String) {
     lazy val nonBlank: Boolean = !"^[\\s　]+$".r.matches(str)
   }
