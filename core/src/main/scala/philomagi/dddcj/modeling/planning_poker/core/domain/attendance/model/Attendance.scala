@@ -33,7 +33,8 @@ object Attendance {
   object Name {
     val MaxLength = 50
 
-    val invalidChars = Seq(
+    //noinspection DuplicatedCode
+    private val invalidChars = Seq(
       '!', '"', '#', '$', '%', '&', '\'', '(', ')', '|',
       '¥', '`', '@', '{', '}', '[', ']', '+', '*',
       '<', '>', '?', '/', '^', '\t', '\\'
