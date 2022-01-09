@@ -28,15 +28,15 @@ object Attendance {
     require(value.nonEmpty, "attendance name must not be empty")
     require(value.nonBlank, "attendance name must not be blank")
     require(value.within(Name.MaxLength), s"max length of attendance name is ${Name.MaxLength}")
-    require(
-      value.notContains(Seq(
-        '<', '>', '%', '&', '?', '!', '+', '*', '/',
-        '^', '{', '}', '[', ']', '\t', '\\'
-      )),
-      "attendance name include invalid character"
-    )
+    require(value.notContains(Name.invalidChars), "attendance name include invalid character")
   }
   object Name {
     val MaxLength = 50
+
+    val invalidChars = Seq(
+      '!', '"', '#', '$', '%', '&', '\'', '(', ')', '|',
+      '¥', '`', '@', '{', '}', '[', ']', '+', '*',
+      '<', '>', '?', '/', '^', '\t', '\\'
+    )
   }
 }
