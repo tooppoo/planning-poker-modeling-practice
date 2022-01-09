@@ -3,7 +3,9 @@ package scenario
 
 import domain.model.card.Card
 import domain.model.command.Command
+import domain.model.command.Command.Commands
 import domain.model.member.Member
+import domain.model.role.Role
 import domain.model.table.Table
 
 import org.scalatest.funspec.AnyFunSpec
@@ -17,58 +19,58 @@ class ScenarioTest extends AnyFunSpec {
       val facilitator = Member(
         Member.Id("1"),
         Member.Name("John Doe"),
-        List(Member.Role.Facilitator, Member.Role.Player)
+        List(Role.Facilitator, Role.Player)
       )
 
       val player2 = Member(
         Member.Id("2"),
         Member.Name("Jane Doe"),
-        List(Member.Role.Audience)
+        List(Role.Audience)
       )
       val player3 = Member(
         Member.Id("3"),
         Member.Name("Ulick Norman Owen"),
-        List(Member.Role.Audience, Member.Role.Player)
+        List(Role.Audience, Role.Player)
       )
       val player4 = Member(
         Member.Id("4"),
         Member.Name("Una Nancy Owen"),
-        List(Member.Role.Audience, Member.Role.Player)
+        List(Role.Audience, Role.Player)
       )
 
       val tableAfterPlayed = for {
         table <- dispatcher.dispatch(
-          Member.Role.Facilitator.Commands.SetUpNewTable(facilitator),
+          Commands.SetUpNewTable(facilitator),
           Table(Table.Id("domain/table"), facilitator)
         )
         // プレイヤー参加
         table <- dispatcher.dispatch(
-          Member.Role.NewComer.Commands.Join(player2),
+          Commands.Join(player2),
           table
         )
         table <- dispatcher.dispatch(
-          Member.Role.NewComer.Commands.Join(player3),
+          Commands.Join(player3),
           table
         )
         table <- dispatcher.dispatch(
-          Member.Role.NewComer.Commands.Join(player4),
+          Commands.Join(player4),
           table
         )
         // ポーカープレイ
         table <- dispatcher.dispatch(
-          Member.Role.Player.Commands.PutDownCard(facilitator, Card("1")),
+          Commands.PutDownCard(facilitator, Card("1")),
           table
         )
         table <- dispatcher.dispatch(
-          Member.Role.Player.Commands.PutDownCard(player3, Card("2")),
+          Commands.PutDownCard(player3, Card("2")),
           table
         )
         table <- dispatcher.dispatch(
-          Member.Role.Player.Commands.PutDownCard(player4, Card("1")),
+          Commands.PutDownCard(player4, Card("1")),
           table
         )
         table <- dispatcher.dispatch(
-          Member.Role.Player.Commands.ChangeCardOnTable(player4, Card("3")),
+          Commands.ChangeCardOnTable(player4, Card("3")),
           table
         )
       } yield {
@@ -80,7 +82,7 @@ class ScenarioTest extends AnyFunSpec {
       val tableAfterShowDown = for {
         table <- tableAfterPlayed
         table <- dispatcher.dispatch(
-          Member.Role.Facilitator.Commands.ShowDown(facilitator),
+          Commands.ShowDown(facilitator),
           table
         )
       } yield {
@@ -92,7 +94,7 @@ class ScenarioTest extends AnyFunSpec {
       for {
         table <- tableAfterShowDown
         table <- dispatcher.dispatch(
-          Member.Role.Facilitator.Commands.CloseTable(facilitator),
+          Commands.CloseTable(facilitator),
           table
         )
       } {
