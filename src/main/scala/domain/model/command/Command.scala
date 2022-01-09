@@ -11,19 +11,18 @@ trait Command {
   val actor: Member
   val requiredRole: Option[Role]
 
-  final def run(at: Table): Either[Exception, Table] = requiredRole.fold[Either[Exception, Table]](
-     runImpl(at)
-  )(
-    (required: Role) => if (actor.has(required)) {
-      runImpl(at)
-    } else {
-      Left(
-        new Exception(
-          s"$actor not has role ${requiredRole.getClass.toString} to run ${getClass.toString}"
+  final def run(at: Table): Either[Exception, Table] =
+    requiredRole.fold[Either[Exception, Table]](runImpl(at)) { (required: Role) =>
+      if (actor.has(required)) {
+        runImpl(at)
+      } else {
+        Left(
+          new Exception(
+            s"$actor not has role ${requiredRole.getClass.toString} to run ${getClass.toString}"
+          )
         )
-      )
+      }
     }
-  )
 
   protected[this] def runImpl(at: Table): Either[Exception, Table]
 }
@@ -59,14 +58,11 @@ object Command {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.toEmpty)
     }
     case class PutDownCard(actor: Member, card: Card) extends PlayerCommand {
-      override protected def runImpl(at: Table): Either[Exception, Table] =
-        at.put(card, by = actor)
+      override protected def runImpl(at: Table): Either[Exception, Table] = at.put(card, by = actor)
     }
 
     case class ChangeCardOnTable(actor: Member, card: Card) extends PlayerCommand {
-      override protected def runImpl(at: Table): Either[Exception, Table] = Right(
-        at.replace(card, by = actor)
-      )
+      override protected def runImpl(at: Table): Either[Exception, Table] = at.replace(card, by = actor)
     }
     case class Join(actor: Member) extends Command {
       val requiredRole: Option[Role] = None

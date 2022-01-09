@@ -16,35 +16,40 @@ class Table private (
     Left(new Exception(s"${newMember.id} already joined to table $id"))
   }
 
-  def put(newCard: Card, by: Member): Either[Exception, Table] = if (members.contains(by)) {
+  def put(newCard: Card, by: Member): Either[Exception, Table] = requireAlreadyJoin(by) {
     if (cards.contains(newCard)) {
-      Right(replace(newCard, by = by))
+      replace(newCard, by = by)
     } else {
-      Right(
-        new Table(
-          id,
-          members,
-          cards.appended(CardOnTable(by, newCard))
-        )
-      )
+      Right(new Table(
+        id,
+        members,
+        cards.appended(CardOnTable(by, newCard))
+      ))
     }
-  } else {
-    Left(new Exception(s"$by not joined to table $id yet"))
   }
 
-  def replace(newCard: Card, by: Member): Table = withCards(
-    cards.map(c => if (c.owner == by) {
-      CardOnTable(by, newCard)
-    } else {
-      c
-    })
-  )
+  def replace(newCard: Card, by: Member): Either[Exception, Table] = requireAlreadyJoin(by) {
+    Right(withCards(
+      cards.map(c => if (c.owner == by) {
+        CardOnTable(by, newCard)
+      } else {
+        c
+      })
+    ))
+  }
 
   def openCards: Table = withCards(cards.map(c => c.open))
 
   def toEmpty: Table = new Table(id, List.empty, List.empty)
 
   private def withCards(cards: List[CardOnTable]) = new Table(id, members, cards)
+
+  private def requireAlreadyJoin(m: Member)(r: Either[Exception, Table]): Either[Exception, Table] =
+    if (members.contains(m)) {
+      r
+    } else {
+      Left(new Exception(s"$m not joined to table $id yet"))
+    }
 }
 object Table {
   def apply(id: Table.Id, opener: Member) = new Table(id, List(opener), List.empty)
