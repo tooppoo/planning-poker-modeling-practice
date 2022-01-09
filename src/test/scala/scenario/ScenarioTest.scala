@@ -1,10 +1,10 @@
 package philomagi.dddcj.modeling.planning_poker
 package scenario
 
-import card.Card
-import command.Command
-import member.Member
-import table.Table
+import domain.model.card.Card
+import domain.model.command.Command
+import domain.model.member.Member
+import domain.model.table.Table
 
 import org.scalatest.funspec.AnyFunSpec
 
@@ -39,7 +39,7 @@ class ScenarioTest extends AnyFunSpec {
       val tableAfterPlayed = for {
         table <- dispatcher.dispatch(
           Member.Role.Facilitator.Commands.SetUpNewTable(facilitator),
-          Table(Table.Id("table"), facilitator)
+          Table(Table.Id("domain/table"), facilitator)
         )
         // プレイヤー参加
         table <- dispatcher.dispatch(

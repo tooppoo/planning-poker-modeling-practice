@@ -1,9 +1,9 @@
 package philomagi.dddcj.modeling.planning_poker
-package table
+package domain.model.table
 
-import card.Card
-import member.Member
-import table.Table.CardOnTable
+import domain.model.card.Card
+import domain.model.member.Member
+import domain.model.table.Table.CardOnTable
 
 class Table private (
                       val id: Table.Id,

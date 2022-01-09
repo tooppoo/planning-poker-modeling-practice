@@ -1,10 +1,10 @@
 package philomagi.dddcj.modeling.planning_poker
-package member
+package domain.model.member
 
-import card.Card
-import command.Command
-import table.Table
-import table.Table.CardOnTable
+import domain.model.card.Card
+import domain.model.command.Command
+import domain.model.table.Table
+import domain.model.table.Table.CardOnTable
 
 case class Member(
                    id: Member.Id,

@@ -1,11 +1,9 @@
 package philomagi.dddcj.modeling.planning_poker
-package command
+package domain.model.command
 
-import member.Member
-import member.Member.Role
-import table.Table
-
-import scala.concurrent.Future
+import domain.model.member.Member
+import domain.model.member.Member.Role
+import domain.model.table.Table
 
 trait Command {
   val actor: Member
