@@ -1,14 +1,14 @@
 package philomagi.dddcj.modeling.planning_poker.core
 package command.model
 
-import attendance.model.Member
+import attendance.model.Attendance
 import card.model.Card
 import role.model.Role
 import role.model.Role.{Facilitator, Player}
 import table.model.Table
 
 trait Command {
-  val actor: Member
+  val actor: Attendance
   val requiredRole: Option[Role]
 
   final def run(at: Table): Either[Exception, Table] =
@@ -49,26 +49,26 @@ object Command {
       override val requiredRole: Option[Role] = None
     }
 
-    case class SetUpNewTable(actor: Member) extends FacilitatorCommand {
+    case class SetUpNewTable(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at)
     }
 
-    case class ShowDown(actor: Member) extends FacilitatorCommand {
+    case class ShowDown(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.openCards)
     }
 
-    case class CloseTable(actor: Member) extends FacilitatorCommand {
+    case class CloseTable(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.toEmpty)
     }
-    case class PutDownCard(actor: Member, card: Card) extends PlayerCommand {
+    case class PutDownCard(actor: Attendance, card: Card) extends PlayerCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.put(card, by = actor)
     }
 
-    case class ChangeCardOnTable(actor: Member, card: Card) extends PlayerCommand {
+    case class ChangeCardOnTable(actor: Attendance, card: Card) extends PlayerCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.replace(card, by = actor)
     }
 
-    case class Join(actor: Member) extends FreeCommand {
+    case class Join(actor: Attendance) extends FreeCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.accept(actor)
     }
   }

@@ -1,7 +1,7 @@
 package philomagi.dddcj.modeling.planning_poker.core
 package sceinario
 
-import attendance.model.Member
+import attendance.model.Attendance
 import card.model.Card
 import command.model.Command
 import command.model.Command.Commands
@@ -14,25 +14,25 @@ class ScenarioTest extends AnyFunSpec {
     val dispatcher = Command.Dispatcher.NoPersistenceDispatcher
 
     it("テーブル準備 ~ メンバー招待 ~ ポーカープレイ ~ 解散") {
-      val facilitator = Member(
-        Member.Id("1"),
-        Member.Name("John Doe"),
+      val facilitator = Attendance(
+        Attendance.Id("1"),
+        Attendance.Name("John Doe"),
         List(Role.Facilitator, Role.Player)
       )
 
-      val player2 = Member(
-        Member.Id("2"),
-        Member.Name("Jane Doe"),
+      val player2 = Attendance(
+        Attendance.Id("2"),
+        Attendance.Name("Jane Doe"),
         List(Role.Audience)
       )
-      val player3 = Member(
-        Member.Id("3"),
-        Member.Name("Ulick Norman Owen"),
+      val player3 = Attendance(
+        Attendance.Id("3"),
+        Attendance.Name("Ulick Norman Owen"),
         List(Role.Audience, Role.Player)
       )
-      val player4 = Member(
-        Member.Id("4"),
-        Member.Name("Una Nancy Owen"),
+      val player4 = Attendance(
+        Attendance.Id("4"),
+        Attendance.Name("Una Nancy Owen"),
         List(Role.Audience, Role.Player)
       )
 
