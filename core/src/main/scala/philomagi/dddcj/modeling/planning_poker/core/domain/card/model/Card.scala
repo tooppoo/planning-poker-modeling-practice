@@ -1,5 +1,4 @@
-package philomagi.dddcj.modeling.planning_poker.core
-package card.model
+package philomagi.dddcj.modeling.planning_poker.core.domain.card.model
 
 case class Card(suite: Card.Suite)
 object Card {

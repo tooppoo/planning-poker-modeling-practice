@@ -2,6 +2,7 @@ package philomagi.dddcj.modeling.planning_poker.core.attendance.model
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.prop.TableDrivenPropertyChecks
+import philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model.Attendance
 
 class AttendanceTest extends AnyFunSpec with TableDrivenPropertyChecks {
   describe("Id") {

@@ -1,7 +1,6 @@
-package philomagi.dddcj.modeling.planning_poker.core
-package attendance.model
+package philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model
 
-import role.model.Role
+import philomagi.dddcj.modeling.planning_poker.core.domain.role.model.Role
 
 case class Attendance(
                        id: Attendance.Id,
@@ -12,7 +11,7 @@ case class Attendance(
 }
 object Attendance {
   case class Id(value: String) {
-    import philomagi.dddcj.modeling.planning_poker.core.attendance.lib.extension.StringExtension._
+    import philomagi.dddcj.modeling.planning_poker.core.lib.extension.StringExtension._
 
     require(value.nonEmpty, "attendance id must not be empty")
     require(value.nonBlank, "attendance id must not be blank")
@@ -24,7 +23,7 @@ object Attendance {
   }
 
   case class Name(value: String) {
-    import philomagi.dddcj.modeling.planning_poker.core.attendance.lib.extension.StringExtension._
+    import philomagi.dddcj.modeling.planning_poker.core.lib.extension.StringExtension._
 
     require(value.nonEmpty, "attendance name must not be empty")
     require(value.nonBlank, "attendance name must not be blank")

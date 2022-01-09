@@ -1,13 +1,13 @@
 package philomagi.dddcj.modeling.planning_poker.core
 package sceinario
 
-import attendance.model.Attendance
-import card.model.Card
-import command.model.Command
-import command.model.Command.Commands
+import philomagi.dddcj.modeling.planning_poker.core.domain.command.model.Command.Commands
 import org.scalatest.funspec.AnyFunSpec
-import role.model.Role
-import table.model.Table
+import philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model.Attendance
+import philomagi.dddcj.modeling.planning_poker.core.domain.card.model.Card
+import philomagi.dddcj.modeling.planning_poker.core.domain.command.model.Command
+import philomagi.dddcj.modeling.planning_poker.core.domain.role.model.Role
+import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table
 
 class ScenarioTest extends AnyFunSpec {
   describe("プランニングポーカー実施") {

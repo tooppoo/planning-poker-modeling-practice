@@ -1,9 +1,8 @@
-package philomagi.dddcj.modeling.planning_poker.core
-package table.model
+package philomagi.dddcj.modeling.planning_poker.core.domain.table.model
 
-import attendance.model.Attendance
-import card.model.Card
-import table.model.Table.CardOnTable
+import philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model.Attendance
+import philomagi.dddcj.modeling.planning_poker.core.domain.card.model.Card
+import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table.CardOnTable
 
 class Table private (
                       val id: Table.Id,

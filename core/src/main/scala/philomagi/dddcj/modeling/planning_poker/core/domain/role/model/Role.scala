@@ -1,5 +1,4 @@
-package philomagi.dddcj.modeling.planning_poker.core
-package role.model
+package philomagi.dddcj.modeling.planning_poker.core.domain.role.model
 
 sealed trait Role
 object Role {
