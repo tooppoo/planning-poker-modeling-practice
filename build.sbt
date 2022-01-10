@@ -2,27 +2,36 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "2.13.7"
 
-ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.10" % Test
-ThisBuild / libraryDependencies += "org.scalatest" %% "scalatest-funspec" % "3.2.10" % Test
+ThisBuild / libraryDependencies ++= Dependencies.ScalaTest.dependencies
 
 lazy val root = (project in file("."))
   .settings(
-    name := "planning-poker"
+    ProjectConfig.RootProject.toSettings: _*
   )
   .aggregate(core, webAkka)
 
 lazy val core = (project in file("core"))
   .configure(prj => {
-    val path = prj.base.getAbsolutePath
+    val coreConf = ProjectConfig.SubProject("core")
+    val jigConf = JigConfig(prj)
 
-    prj.settings(
-      jig / jigProjectPath := path,
-      jig / jigOutputDirectoryText := s"$path/target/jig",
-      jig / jigDirectoryClasses := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
-      jig / jigDirectoryResources := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
-      jig / jigPatternDomain := s".+\\.core\\..+"
-    )
+    prj
+      .settings(
+        coreConf.toSettings,
+        jigConf.defaultSettings,
+        jig / jigPatternDomain := s".+\\.core\\..+"
+      )
   })
 
 lazy val webAkka = (project in file("web-akka"))
+  .configure(prj => {
+    val webAkkaConf = ProjectConfig.SubProject("web-akka", "web_akka")
+
+    prj.settings(
+      webAkkaConf.toSettings
+    )
+  })
+  .settings(
+    libraryDependencies ++= Dependencies.Akka.dependencies
+  )
   .dependsOn(core)
