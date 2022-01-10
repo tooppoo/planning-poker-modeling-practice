@@ -20,6 +20,6 @@ lazy val core = (project in file("core"))
       jig / jigOutputDirectoryText := s"$path/target/jig",
       jig / jigDirectoryClasses := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
       jig / jigDirectoryResources := s"$path/target/scala-${scalaBinaryVersion.value}/classes",
-      jig / jigPatternDomain := s".+\\.model\\..+"
+      jig / jigPatternDomain := s".+\\.core\\..+"
     )
   })
