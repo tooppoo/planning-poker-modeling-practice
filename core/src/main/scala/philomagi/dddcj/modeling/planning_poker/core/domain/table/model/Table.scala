@@ -17,9 +17,9 @@ class Table private (
     }
 
   protected[core] def put(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
-    val alreadyExistOnTable = cards.exists(c => (c is newCard) && (c putBy by))
+    val alreadyPutOnTable = cards.exists(_ putBy by)
 
-    if (alreadyExistOnTable) {
+    if (alreadyPutOnTable) {
       replace(newCard, by = by)
     } else {
       Right(new Table(
@@ -32,11 +32,13 @@ class Table private (
 
   protected[core] def replace(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
     Right(withCards(
-      cards.map(c => if (c.owner == by) {
-        CardOnTable(by, newCard)
-      } else {
-        c
-      })
+      cards.map { c =>
+        if (c putBy by) {
+          CardOnTable(by, newCard)
+        } else {
+          c
+        }
+      }
     ))
   }
 
