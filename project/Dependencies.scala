@@ -19,7 +19,8 @@ object Dependencies {
       "com.typesafe.akka" %% "akka-stream" % version,
       "com.typesafe.akka" %% "akka-http" % httpVersion,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % version % Test,
-      "com.typesafe.akka" %% "akka-http-spray-json" % httpVersion
+      "com.typesafe.akka" %% "akka-http-spray-json" % httpVersion,
+      "ch.qos.logback" % "logback-classic" % "1.2.10"
     )
   }
 }

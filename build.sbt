@@ -5,10 +5,11 @@ ThisBuild / scalaVersion := "2.13.7"
 ThisBuild / libraryDependencies ++= Dependencies.ScalaTest.dependencies
 
 lazy val root = (project in file("."))
-  .settings(
-    ProjectConfig.RootProject.toSettings: _*
-  )
   .aggregate(core, webAkka)
+  .settings(
+    core / run / aggregate := false,
+    ProjectConfig.RootProject.toSettings
+  )
 
 lazy val core = (project in file("core"))
   .configure(prj => {

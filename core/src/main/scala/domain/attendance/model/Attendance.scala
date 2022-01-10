@@ -5,8 +5,8 @@ import domain.role.model.Role
 
 case class Attendance(
                        id: Attendance.Id,
-                       private val name: Attendance.Name,
-                       private val roles: Seq[Role]
+                       name: Attendance.Name,
+                       roles: Seq[Role]
                  ) {
   def has(role: Role): Boolean = roles.contains(role)
 
