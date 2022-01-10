@@ -30,7 +30,13 @@ class Table private (
     }
   }
 
-  protected[core] def replace(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
+  protected[core] def openCards: Table = withCards(cards.map(c => c.open))
+
+  protected[core] def toEmpty: Table = new Table(id, Seq.empty, Seq.empty)
+
+  private def withCards(cards: Seq[CardOnTable]) = new Table(id, attendances, cards)
+
+  private def replace(newCard: Card, by: Attendance): Either[Exception, Table] = requireAlreadyJoin(by) {
     Right(withCards(
       cards.map { c =>
         if (c putBy by) {
@@ -41,12 +47,6 @@ class Table private (
       }
     ))
   }
-
-  protected[core] def openCards: Table = withCards(cards.map(c => c.open))
-
-  protected[core] def toEmpty: Table = new Table(id, Seq.empty, Seq.empty)
-
-  private def withCards(cards: Seq[CardOnTable]) = new Table(id, attendances, cards)
 
   private def requireAlreadyJoin(m: Attendance)(r: Either[Exception, Table]): Either[Exception, Table] =
     if (attendances.contains(m)) {

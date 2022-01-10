@@ -63,10 +63,6 @@ object Command {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.put(card, by = actor)
     }
 
-    case class ChangeCardOnTable(actor: Attendance, card: Card) extends PlayerCommand {
-      override protected def runImpl(at: Table): Either[Exception, Table] = at.replace(card, by = actor)
-    }
-
     case class Join(actor: Attendance) extends FreeCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.accept(actor)
     }

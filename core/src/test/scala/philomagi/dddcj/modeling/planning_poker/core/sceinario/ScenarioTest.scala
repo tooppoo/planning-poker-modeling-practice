@@ -68,7 +68,7 @@ class ScenarioTest extends AnyFunSpec {
           table
         )
         table <- dispatcher.dispatch(
-          Commands.ChangeCardOnTable(player4, Card(Card.Suite("3"))),
+          Commands.PutDownCard(player4, Card(Card.Suite("3"))),
           table
         )
       } yield {
