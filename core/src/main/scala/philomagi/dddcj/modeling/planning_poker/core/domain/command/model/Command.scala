@@ -10,7 +10,7 @@ trait Command {
   val actor: Attendance
   val requiredRole: Option[Role]
 
-  final def run(at: Table): Either[Exception, Table] =
+  protected[command] final def run(at: Table): Either[Exception, Table] = {
     requiredRole.fold[Either[Exception, Table]](runImpl(at)) { (required: Role) =>
       if (actor.has(required)) {
         runImpl(at)
@@ -22,6 +22,7 @@ trait Command {
         )
       }
     }
+  }
 
   protected[this] def runImpl(at: Table): Either[Exception, Table]
 }
@@ -39,10 +40,10 @@ object Command {
 
   object Commands {
     trait FacilitatorCommand extends Command {
-      override val requiredRole: Some[Facilitator.type] = Some(Facilitator)
+      override val requiredRole: Option[Role] = Some(Facilitator)
     }
     trait PlayerCommand extends Command {
-      val requiredRole: Some[Role] = Some(Player)
+      override val requiredRole: Option[Role] = Some(Player)
     }
     trait FreeCommand extends Command {
       override val requiredRole: Option[Role] = None
@@ -51,14 +52,13 @@ object Command {
     case class SetUpNewTable(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at)
     }
-
     case class ShowDown(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.openCards)
     }
-
     case class CloseTable(actor: Attendance) extends FacilitatorCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = Right(at.toEmpty)
     }
+
     case class PutDownCard(actor: Attendance, card: Card) extends PlayerCommand {
       override protected def runImpl(at: Table): Either[Exception, Table] = at.put(card, by = actor)
     }
