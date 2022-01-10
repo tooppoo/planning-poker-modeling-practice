@@ -72,8 +72,6 @@ object Table {
 
     def open: CardOnTable = CardOnTable(owner, card, CardOnTable.State.Open)
 
-    def is(other: Card): Boolean = card == other
-
     def putBy(who: Attendance): Boolean = owner == who
   }
 

@@ -27,8 +27,6 @@ trait Command {
   protected[this] def runImpl(at: Table): Either[Exception, Table]
 }
 object Command {
-  def dispatch(command: Command, table: Table): Either[Exception, Table] = command.run(table)
-
   trait Dispatcher {
     def dispatch(command: Command, table: Table): Either[Exception, Table]
   }
