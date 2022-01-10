@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "planning-poker"
   )
-  .aggregate(core)
+  .aggregate(core, webAkka)
 
 lazy val core = (project in file("core"))
   .configure(prj => {
@@ -23,3 +23,6 @@ lazy val core = (project in file("core"))
       jig / jigPatternDomain := s".+\\.core\\..+"
     )
   })
+
+lazy val webAkka = (project in file("web-akka"))
+  .dependsOn(core)
