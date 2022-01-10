@@ -1,12 +1,50 @@
 package philomagi.dddcj.modeling.planning_poker.core.domain.table.model
 
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.prop.TableDrivenPropertyChecks
 import philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model.Attendance
 import philomagi.dddcj.modeling.planning_poker.core.domain.card.model.Card
+import philomagi.dddcj.modeling.planning_poker.core.domain.table
 import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table.CardOnTable
 import philomagi.dddcj.modeling.planning_poker.core.test_helper.TestHelper.{AfterJoinToTable, UseDummyPlayer, UseDummyTable, UseDummyTableOwner}
 
-class TableTest extends AnyFunSpec {
+class TableTest extends AnyFunSpec with TableDrivenPropertyChecks {
+  describe("Id") {
+    describe("generate") {
+      describe("with valid id") {
+        it("should generate id object") {
+          val idValue = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+
+          assert(table.model.Table.Id(idValue).value == idValue)
+        }
+      }
+      describe("with invalid id") {
+        val testCases = Table(
+          ("バリエーション", "ID文字列"),
+          ("空ID", ""),
+          ("半角空白のみ", "  "),
+          ("全角を含む", "cicadaてすと3310"),
+          ("半角空白を含む", "cicada 3310"),
+          ("全角空白を含む", "cicada　3310"),
+          ("-以外の記号を含む", "cicada/3310"),
+          ("非UUID形式", "f8-7-1-a-00"),
+        )
+
+        forAll(testCases) { (caseLabel, invalidId) =>
+          describe(s"$caseLabel の場合") {
+            describe(s"id = \"$invalidId\"") {
+              it("should raise exception") {
+                assertThrows[IllegalArgumentException] {
+                  table.model.Table.Id(invalidId)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   describe("テーブルへの参加") {
     describe("未参加") {
       it("参加できること") {
@@ -32,12 +70,6 @@ class TableTest extends AnyFunSpec {
     describe("参加済み") {
       it("二重に参加できないこと") {
         new UseDummyTable with UseDummyTableOwner {
-          override def tableOwner: Attendance = Attendance(
-            Attendance.Id("sut"),
-            Attendance.Name("SUT"),
-            rolesOfOwner
-          )
-
           assert(table.accept(tableOwner).isLeft)
         }
       }

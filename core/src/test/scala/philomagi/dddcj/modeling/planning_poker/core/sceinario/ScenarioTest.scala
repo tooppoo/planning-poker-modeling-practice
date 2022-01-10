@@ -15,23 +15,23 @@ class ScenarioTest extends AnyFunSpec {
 
     it("テーブル準備 ~ メンバー招待 ~ ポーカープレイ ~ 解散") {
       val facilitator = Attendance(
-        Attendance.Id("1"),
+        Attendance.Id("aa63878a-e45d-d8f5-5b6e-abecc5afec4f"),
         Attendance.Name("John Doe"),
         List(Role.Facilitator, Role.Player)
       )
 
       val player2 = Attendance(
-        Attendance.Id("2"),
+        Attendance.Id("7aedf045-136c-cbfd-f847-712771db88d8"),
         Attendance.Name("Jane Doe"),
         List(Role.Audience)
       )
       val player3 = Attendance(
-        Attendance.Id("3"),
+        Attendance.Id("ec39a54e-fc7b-7f43-1cf6-4530750da528"),
         Attendance.Name("Ulick Norman Owen"),
         List(Role.Audience, Role.Player)
       )
       val player4 = Attendance(
-        Attendance.Id("4"),
+        Attendance.Id("058f9c8e-5b4f-41d9-944d-7c145d675064"),
         Attendance.Name("Una Nancy Owen"),
         List(Role.Audience, Role.Player)
       )
@@ -39,7 +39,7 @@ class ScenarioTest extends AnyFunSpec {
       val tableAfterPlayed = for {
         table <- dispatcher.dispatch(
           Commands.SetUpNewTable(facilitator),
-          Table(Table.Id("domain/table"), facilitator)
+          Table(Table.Id("745b898c-ed06-0cf3-69bb-c7b4051d7d99"), facilitator)
         )
         // プレイヤー参加
         table <- dispatcher.dispatch(

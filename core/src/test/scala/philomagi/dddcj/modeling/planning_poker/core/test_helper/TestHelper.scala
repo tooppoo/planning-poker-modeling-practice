@@ -6,7 +6,7 @@ import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table
 
 object TestHelper {
   trait UseDummyTable {
-    def tableId: Table.Id = Table.Id("dummy-table")
+    def tableId: Table.Id = Table.Id("a5aab3d1-0688-69ec-5bd9-a87f091086e2")
     def tableOwner: Attendance
 
     def table: Table = Table(tableId, tableOwner)
@@ -15,7 +15,7 @@ object TestHelper {
     def rolesOfOwner: Seq[Role] = Seq(Role.Facilitator)
 
     def tableOwner: Attendance = Attendance(
-      Attendance.Id("dummy-owner-id"),
+      Attendance.Id("ddfbe0b5-ef42-2914-29c4-8581c6145c74"),
       Attendance.Name("dummy-owner-name"),
       rolesOfOwner
     )
@@ -24,7 +24,7 @@ object TestHelper {
     def rolesOfPlayer: Seq[Role] = Seq(Role.Player)
 
     def player: Attendance = Attendance(
-      Attendance.Id("dummy-player"),
+      Attendance.Id("d69c9d26-d7ac-3142-69c0-af9deb953ea2"),
       Attendance.Name("dummy-player"),
       rolesOfPlayer
     )

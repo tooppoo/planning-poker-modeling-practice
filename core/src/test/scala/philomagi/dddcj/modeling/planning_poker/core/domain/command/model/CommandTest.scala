@@ -125,8 +125,8 @@ class CommandTest extends AnyFunSpec with TableDrivenPropertyChecks {
     def actorsRoles: Seq[Role]
 
     def actor: Attendance = Attendance(
-      Attendance.Id("dummy-id"),
-      Attendance.Name("dummy-name"),
+      Attendance.Id("69e2d3bc-0f83-33ac-972d-05f46bfa03dd"),
+      Attendance.Name("dummy-actor"),
       actorsRoles
     )
   }

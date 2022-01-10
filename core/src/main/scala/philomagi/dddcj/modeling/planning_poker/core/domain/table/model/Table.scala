@@ -58,7 +58,13 @@ class Table private (
 object Table {
   def apply(id: Table.Id, opener: Attendance) = new Table(id, Seq(opener), Seq.empty)
 
-  case class Id(private val value: String)
+  case class Id(value: String) {
+    import philomagi.dddcj.modeling.planning_poker.core.lib.extension.StringExtension._
+
+    require(value.nonEmpty, "table id must not be empty")
+    require(value.nonBlank, "table id must not be blank")
+    require(value.likeUUID, "attendance id must be valid uuid format")
+  }
 
   protected[table] case class CardOnTable private (
                                    owner: Attendance,

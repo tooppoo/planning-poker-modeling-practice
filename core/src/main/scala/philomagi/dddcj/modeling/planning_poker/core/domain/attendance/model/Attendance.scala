@@ -17,11 +17,7 @@ object Attendance {
 
     require(value.nonEmpty, "attendance id must not be empty")
     require(value.nonBlank, "attendance id must not be blank")
-    require(value.within(Id.MaxLength), s"max length of attendance id is ${Id.MaxLength}")
-    require(value.matches("^[a-zA-Z0-9_-]+"), "id contains also invalid characters")
-  }
-  object Id {
-    val MaxLength = 100
+    require(value.likeUUID, "attendance id must be valid uuid format")
   }
 
   case class Name(value: String) {

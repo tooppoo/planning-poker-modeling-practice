@@ -1,46 +1,28 @@
-package philomagi.dddcj.modeling.planning_poker.core.attendance.model
+package philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.prop.TableDrivenPropertyChecks
-import philomagi.dddcj.modeling.planning_poker.core.domain.attendance.model.Attendance
 
 class AttendanceTest extends AnyFunSpec with TableDrivenPropertyChecks {
   describe("Id") {
     describe("generate") {
       describe("with valid id") {
-        val testCases = Table(
-          ("バリエーション", "ID文字列"),
-          ("半角英1文字", "a"),
-          ("半角数1文字", "5"),
-          ("半角英のみ", "cicada"),
-          ("半角数のみ", "3301"),
-          ("半角英数のみ", "cicada3301"),
-          ("半角英数 + ハイフン", "cicada-3301"),
-          ("半角英数 + アンダーバー", "cicada_3301"),
-          ("半角英数 + ハイフン + アンダーバー", "cicada-_3301"),
-          ("ID長上限", "a" * Attendance.Id.MaxLength),
-        )
+        it("should generate id object") {
+          val idValue = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 
-        forAll(testCases) { (caseLabel, idValue) =>
-          describe(s"$caseLabel の場合") {
-            describe(s"id = \"$idValue\"") {
-              it("should generate id object") {
-                assert(Attendance.Id(idValue).value == idValue)
-              }
-            }
-          }
+          assert(Attendance.Id(idValue).value == idValue)
         }
       }
       describe("with invalid id") {
         val testCases = Table(
           ("バリエーション", "ID文字列"),
           ("空ID", ""),
-          ("ID長違反", "a" * (Attendance.Id.MaxLength + 1)),
           ("半角空白のみ", "  "),
           ("全角を含む", "cicadaてすと3310"),
           ("半角空白を含む", "cicada 3310"),
           ("全角空白を含む", "cicada　3310"),
-          ("記号を含む", "cicada/3310"),
+          ("-以外の記号を含む", "cicada/3310"),
+          ("非UUID形式", "f8-7-1-a-00"),
         )
 
         forAll(testCases) { (caseLabel, invalidId) =>
