@@ -3,16 +3,20 @@ package domain.attendance.model
 
 import domain.role.model.Role
 
-case class Attendance(
-                       id: Attendance.Id,
-                       name: Attendance.Name,
-                       roles: Seq[Role]
-                 ) {
+case class Attendance
+(
+  id: Attendance.Id,
+  name: Attendance.Name,
+  roles: Seq[Role]
+) {
   def has(role: Role): Boolean = roles.contains(role)
 
   def ==(other: Attendance): Boolean = id == other.id
 }
 object Attendance {
+  def apply(id: Attendance.Id, name: Attendance.Name): Attendance =
+    Attendance(id, name, Seq(Role.NewComer))
+
   case class Id(value: String) {
     import lib.extension.StringExtension._
 
