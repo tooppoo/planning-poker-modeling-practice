@@ -12,12 +12,14 @@ object Dependencies {
 
   object Akka {
     val version = "2.6.18"
+    val httpVersion = "10.2.6"
 
     val dependencies = Seq(
       "com.typesafe.akka" %% "akka-actor-typed" % version,
       "com.typesafe.akka" %% "akka-stream" % version,
-      "com.typesafe.akka" %% "akka-http" % "10.2.6",
+      "com.typesafe.akka" %% "akka-http" % httpVersion,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % version % Test,
+      "com.typesafe.akka" %% "akka-http-spray-json" % httpVersion
     )
   }
 }
