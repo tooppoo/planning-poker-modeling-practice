@@ -27,9 +27,12 @@ lazy val core = (project in file("core"))
 lazy val webAkka = (project in file("web-akka"))
   .configure(prj => {
     val webAkkaConf = ProjectConfig.SubProject("web-akka", "web_akka")
+    val jigConf = JigConfig(prj)
 
     prj.settings(
-      webAkkaConf.toSettings
+      webAkkaConf.toSettings,
+      jigConf.defaultSettings,
+      jig / jigPatternDomain := ".+\\.web_akka\\..+"
     )
   })
   .settings(
