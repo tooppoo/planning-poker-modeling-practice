@@ -26,21 +26,21 @@ object TablesActor {
     case class FindTable(id: Table.Id, replyTo: ActorRef[Table]) extends Message
   }
 
-  def apply(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = Behaviors.receive {
+  def apply(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = apply(Seq.empty)
+  def apply(tables: Seq[ActorRef[TableActor.Message]])(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = Behaviors.receive {
     case (ctx, Message.SetUpTable(owner, replyTo)) =>
       ctx.log.info(s"$owner setup new table")
 
       val tableId = Table.Id(UUID.randomUUID().toString)
-      ctx.spawn(TableActor(tableId, owner), nameOf(tableId))
+      val table = ctx.spawn(TableActor(tableId, owner), nameOf(tableId))
 
       replyTo ! tableId
 
-      Behaviors.same
+      apply(tables :+ table)
 
     case (ctx, Message.JoinNewly(tableId, newly, replyTo)) =>
-      ctx.child(nameOf(tableId)) match {
-        // TODO: 型消去からくるwarningへの対処
-        case Some(child: ActorRef[TableActor.Message]) =>
+      tables.find(_.path.name == nameOf(tableId)) match {
+        case Some(child) =>
           child ! TableActor.Message.AcceptNewAttendance(newly)
           replyTo ! Message.TableFound
           Behaviors.same
@@ -55,13 +55,8 @@ object TablesActor {
       implicit val scheduler: Scheduler = schedulerFromActorSystem(ctx.system)
       implicit val ec: ExecutionContext = ctx.executionContext
 
-      val tablesFeatures = ctx.children.foldLeft[Seq[Future[Table]]](Seq.empty) { (xs, act) =>
-        act match {
-          // TODO: 型消去からくるwarningへの対処
-          case a: ActorRef[TableActor.Message] =>
-            xs :+ (a ? TableActor.Message.GetTable).mapTo[Table]
-          case _ => xs
-        }
+      val tablesFeatures = tables.foldLeft[Seq[Future[Table]]](Seq.empty) { (xs, table) =>
+        xs :+ (table ? TableActor.Message.GetTable).mapTo[Table]
       }
       Future.sequence(tablesFeatures).map { tables =>
         replyTo ! tables
