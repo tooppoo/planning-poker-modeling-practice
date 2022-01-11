@@ -14,6 +14,9 @@ case class Attendance
   def ==(other: Attendance): Boolean = id == other.id
 }
 object Attendance {
+  def asFacilitator(id: Attendance.Id, name: Attendance.Name): Attendance =
+    Attendance(id, name, Seq(Role.Facilitator))
+
   def apply(id: Attendance.Id, name: Attendance.Name): Attendance =
     Attendance(id, name, Seq(Role.NewComer))
 

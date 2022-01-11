@@ -67,7 +67,7 @@ object Table {
     require(value.likeUUID, "attendance id must be valid uuid format")
   }
 
-  protected[table] case class CardOnTable private (
+  case class CardOnTable private (
                                    owner: Attendance,
                                    private val card: Card,
                                    private val state: CardOnTable.State
@@ -77,9 +77,9 @@ object Table {
       case CardOnTable.State.Close => "*"
     }
 
-    def open: CardOnTable = CardOnTable(owner, card, CardOnTable.State.Open)
+    protected[table] def open: CardOnTable = CardOnTable(owner, card, CardOnTable.State.Open)
 
-    def putBy(who: Attendance): Boolean = owner == who
+    protected[table] def putBy(who: Attendance): Boolean = owner == who
   }
 
   object CardOnTable {

@@ -1,6 +1,6 @@
 package philomagi.dddcj.modeling.planning_poker.web_akka
 
-import actor.poker.RegisteredUserActor
+import actor.poker.{RegisteredUserActor, TablesActor}
 
 import akka.Done
 import akka.actor.CoordinatedShutdown
@@ -8,6 +8,7 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorSystem, Behavior, Terminated}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
+import philomagi.dddcj.modeling.planning_poker.core.domain.command.model.Command
 
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
@@ -28,10 +29,15 @@ object AkkaHttpServer extends App {
         context.spawn(RegisteredUserActor.apply, "registered-user"),
         system.log
       )
+      val tableRoute = routing.TableRoute(
+        context.spawn(TablesActor.apply(Command.Dispatcher.NoPersistenceDispatcher), "table"),
+        system.log
+      )
 
       val route = pathPrefix("api" / "poker") {
         concat(
-          attendanceRoute.route
+          attendanceRoute.route,
+          tableRoute.route
         )
       }
 
