@@ -7,7 +7,7 @@ import philomagi.dddcj.modeling.planning_poker.core.domain.role.model.Role
 import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table
 import philomagi.dddcj.modeling.planning_poker.core.domain.table.model.Table.CardOnTable
 import spray.json.DefaultJsonProtocol._
-import spray.json.{DeserializationException, JsArray, JsObject, JsString, JsValue, JsonFormat, JsonWriter, PrettyPrinter, RootJsonFormat, enrichAny}
+import spray.json.{DeserializationException, JsArray, JsObject, JsString, JsValue, JsonFormat, JsonWriter, RootJsonFormat, enrichAny}
 
 object DomainFormat {
   object Implicits {

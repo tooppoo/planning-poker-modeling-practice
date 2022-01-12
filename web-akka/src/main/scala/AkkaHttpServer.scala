@@ -1,6 +1,6 @@
 package philomagi.dddcj.modeling.planning_poker.web_akka
 
-import actor.poker.{RegisteredUserActor, TablesActor}
+import actor.poker.TablesActor
 
 import akka.Done
 import akka.actor.CoordinatedShutdown
@@ -25,10 +25,6 @@ object AkkaHttpServer extends App {
       implicit val system: ActorSystem[_] = context.system
       implicit val ec: ExecutionContext = context.executionContext
 
-      val attendanceRoute = routing.RegisteredUserRoute(
-        context.spawn(RegisteredUserActor.apply, "registered-user"),
-        system.log
-      )
       val tableRoute = routing.TableRoute(
         context.spawn(TablesActor.apply(Command.Dispatcher.NoPersistenceDispatcher), "table"),
         system.log
@@ -36,7 +32,6 @@ object AkkaHttpServer extends App {
 
       val route = pathPrefix("api" / "poker") {
         concat(
-          attendanceRoute.route,
           tableRoute.route
         )
       }
