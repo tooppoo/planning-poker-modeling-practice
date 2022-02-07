@@ -26,20 +26,20 @@ object TablesActor {
     case class FindTable(id: Table.Id, replyTo: ActorRef[Table]) extends Message
   }
 
-  def apply(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = apply(Seq.empty)
-  def apply(tables: Seq[ActorRef[TableActor.Message]])(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = Behaviors.receive {
+  def apply(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = apply(Map.empty[Table.Id, ActorRef[TableActor.Message]])
+  def apply(tables: Map[Table.Id, ActorRef[TableActor.Message]])(implicit cd: Command.Dispatcher): Behaviors.Receive[Message] = Behaviors.receive {
     case (ctx, Message.SetUpTable(owner, replyTo)) =>
       ctx.log.info(s"$owner setup new table")
 
       val tableId = Table.Id(UUID.randomUUID().toString)
-      val table = ctx.spawn(TableActor(tableId, owner), nameOf(tableId))
+      val table = ctx.spawn(TableActor(tableId, owner), tableId.value)
 
       replyTo ! tableId
 
-      apply(tables :+ table)
+      apply(tables + (tableId -> table))
 
     case (ctx, Message.JoinNewly(tableId, newly, replyTo)) =>
-      tables.find(_.path.name == nameOf(tableId)) match {
+      tables.get(tableId) match {
         case Some(child) =>
           child ! TableActor.Message.AcceptNewAttendance(newly)
           replyTo ! Message.TableFound
@@ -55,7 +55,7 @@ object TablesActor {
       implicit val scheduler: Scheduler = schedulerFromActorSystem(ctx.system)
       implicit val ec: ExecutionContext = ctx.executionContext
 
-      val tablesFeatures = tables.foldLeft[Seq[Future[Table]]](Seq.empty) { (xs, table) =>
+      val tablesFeatures = tables.values.foldLeft[Seq[Future[Table]]](Seq.empty) { (xs, table) =>
         xs :+ (table ? TableActor.Message.GetTable).mapTo[Table]
       }
       Future.sequence(tablesFeatures).map { tables =>
@@ -64,6 +64,4 @@ object TablesActor {
 
       Behaviors.same
   }
-
-  private[this] def nameOf(id: Table.Id) = s"table-${id.value}"
 }
